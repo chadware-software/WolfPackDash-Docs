@@ -66,6 +66,18 @@ device first** — the cloud only ever stores unreadable ciphertext.
 
 ---
 
+## 🤝 Support the trails
+
+WolfPack Dash is free, and it's better because of the local riding community. If you'd like to give
+back, please support the non-profits we ride with:
+
+- **WestCore** — a local non-profit trail group that builds, maintains, and protects the places we
+  ride: **https://www.westcore.co/**
+
+**We receive nothing for this** — no money, no kickback, no perk. These are personal shout-outs, and
+donations go **directly** to the group, never through us or WolfPack Dash. (More groups may be added
+over time.)
+
 ## ❓ FAQ
 
 **Is this an open collaboration project? Can I contribute code?**
