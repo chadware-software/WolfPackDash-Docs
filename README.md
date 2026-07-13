@@ -73,6 +73,8 @@ back, please support the non-profits we ride with:
 
 - **WestCore** — a local non-profit trail group that builds, maintains, and protects the places we
   ride: **https://www.westcore.co/**
+- **Trails Preservation Alliance** — a Colorado non-profit working to keep motorized trails open:
+  **https://coloradotpa.org/pages/donate**
 
 **We receive nothing for this** — no money, no kickback, no perk. These are personal shout-outs, and
 donations go **directly** to the group, never through us or WolfPack Dash. (More groups may be added
