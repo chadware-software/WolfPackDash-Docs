@@ -29,6 +29,17 @@ telemetry and never writes a single command back. No accounts, no ads, no Google
 
 ---
 
+## 📥 Get the app
+
+WolfPack Dash is **freeware**. The signed APK will be posted to this repo's
+[**Releases**](../../releases) page **soon** — a normal Android sideload: download the
+`.apk`, tap it, and allow "install unknown apps" once when prompted. After that first
+install, the app keeps itself updated over the air, so you only sideload once.
+
+*No release is posted yet, and there's no public date set — but this is where it'll land.*
+
+---
+
 ## 📸 A look at it
 
 <p align="center">
