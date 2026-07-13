@@ -1,0 +1,23 @@
+# WolfPack Dash — profile-backup write proxy. Deploy once: `wrangler deploy`.
+# See README.md in this folder for the full one-time setup (bucket name, KV id, app token, lifecycle).
+
+name = "wolfpackdash-backup"
+main = "src/index.js"
+compatibility_date = "2024-11-01"
+
+# The SAME R2 bucket that serves updates + read-only profiles. Writes land under backups/<hex>.txt.
+# Put your real bucket name here (Cloudflare dashboard → R2 → your bucket).
+[[r2_buckets]]
+binding = "BACKUPS"
+bucket_name = "REPLACE_WITH_YOUR_R2_BUCKET_NAME"
+
+# KV namespace for per-IP rate limiting. Create it once, then paste the id:
+#   wrangler kv namespace create RATE_KV
+[[kv_namespaces]]
+binding = "RATE_KV"
+id = "REPLACE_WITH_KV_NAMESPACE_ID"
+
+# Shared app token is set as a SECRET, not here (so it's not in the repo):
+#   wrangler secret put APP_TOKEN
+# It must match the APP_TOKEN baked into the app (ProfileCloudSync). Optional — if you never set it,
+# the Worker skips the token check and relies on size cap + rate limit + hex-name confinement.

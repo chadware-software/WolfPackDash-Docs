@@ -1,0 +1,91 @@
+Our promise: WolfPack Dash is built in the open, and we tell you exactly
+what it does with your data and your bike.
+
+
+── Your data stays on your phone ──
+
+WolfPack Dash has no user accounts and never sends your ride data,
+location, or bike telemetry to us or anyone else. Everything the app
+records — trips, tracks, settings, bike profiles, downloaded maps — is
+stored locally on your device. Uninstall the app and it's gone.
+
+The only network calls the app makes are: fetching map tiles, looking up
+the outside temperature for your GPS location (Open-Meteo), checking for
+app updates, saving or restoring an ENCRYPTED settings backup when you
+choose to (see below), and — only if a developer turns it on — syncing an
+ENCRYPTED settings profile. None of these carry your bike's telemetry or
+your location.
+
+
+── Permissions, and why ──
+
+  • Bluetooth (scan / connect): to find and read data from your bike.
+  • Location: required by Android for Bluetooth scanning, and used to show
+    your position on the ride map. Your location is never uploaded.
+  • Notifications: to keep the bike connection alive in the background and
+    to surface the pairing PIN.
+  • Install unknown apps: only used to install app updates you approve.
+
+
+── Your bike is read-only ──
+
+WolfPack Dash only READS the telemetry your bike broadcasts. It does not
+send commands to the bike or change how it rides. It is an instrument
+display, not a controller.
+
+
+── How updates are kept safe ──
+
+Updates are distributed as signed APK files over HTTPS. Every update is
+signed with the same developer key as your current install — Android will
+refuse to install anything signed with a different key. Before installing,
+the app verifies the download's SHA-256 fingerprint against the signed
+update manifest, so a tampered or corrupted download is rejected.
+
+You can compare this build's signing-certificate fingerprint (shown below)
+to the one published with each release to confirm what you're running.
+
+
+── How dev settings-sync is kept safe ──
+
+Developers can publish a settings profile (theme, layout, warning
+thresholds — look-and-feel only, never your bike's telemetry) to a cloud
+file, so a fresh install on the matching bike sets itself up on its own.
+That file is encrypted with AES-256-GCM using a key derived from the bike's
+own serial, so the cloud only ever holds unreadable ciphertext — and a
+profile is only ever applied after the app has actually connected to that
+physical bike.
+
+The app itself holds NO cloud credentials — it only reads public files, so
+there is no key or password baked into it. Any upload is done separately by
+a developer with their own account.
+
+
+── Your cloud backup, and your backup code ──
+
+You can back up your own settings (theme, layout, warning thresholds —
+look-and-feel only, never telemetry or location) and restore them on another
+phone with a short BACKUP CODE. The backup is encrypted with AES-256-GCM
+using a key derived from that code, so the cloud only ever holds unreadable
+ciphertext. That code is the only thing that can unlock it — we never see it
+and cannot recover it for you, so keep it somewhere safe.
+
+Saving a backup goes through a small server component that holds the storage
+key; the app itself still carries NO cloud credentials, and restoring is just
+an anonymous read of your own encrypted file. The file's name and its
+encryption key are calculated separately, so even knowing the name of a
+backup can't unlock what's inside it.
+
+
+── Retirement (kill switch) ──
+
+This is a personal, non-commercial build. If it hasn't seen one of our
+bikes in a long time, it retires itself and asks to be uninstalled — by
+design, so old copies don't linger in the wild.
+
+
+── Not affiliated with any bike manufacturer ──
+
+WolfPack Dash is an independent, unofficial app. It is not affiliated with,
+endorsed by, or sponsored by any motorcycle or bike manufacturer. All
+product names and trademarks are the property of their respective owners.
