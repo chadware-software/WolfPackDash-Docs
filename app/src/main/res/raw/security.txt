@@ -76,6 +76,10 @@ an anonymous read of your own encrypted file. The file's name and its
 encryption key are calculated separately, so even knowing the name of a
 backup can't unlock what's inside it.
 
+A backup is kept for about a year. Backing up again refreshes it; a backup
+that goes a year without being re-saved is deleted automatically, so abandoned
+backups don't linger.
+
 
 ── Retirement (kill switch) ──
 
