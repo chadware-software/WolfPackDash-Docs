@@ -12,6 +12,9 @@
 **A free, glove-first Android dashboard for most any dirt bike — with live Bluetooth Low Energy
 telemetry on supported electric bikes.**
 
+> 🏔️ **Coming someday to a bike near you.** In active development, at our own pace — no countdown, no
+> rush. Built by riders, for riders, and given away **free to anyone who can use it.**
+
 WolfPack Dash bolts to the handlebars and turns your phone into a full instrument cluster: GPS speed,
 trip stats, and an offline topo trail map that keep working with no signal on **any** dirt bike — and
 on a supported **electric** bike it adds live speed, gear state, and deep battery health over
@@ -20,9 +23,9 @@ telemetry and never writes a single command back. No accounts, no ads, no Google
 **your bike's telemetry never leaves the phone**.
 
 > **What this repo is.** This is the **public documentation & transparency mirror** for WolfPack Dash.
-> The app is **released and free to use**, and its core features work great — but it's a living project
-> that keeps evolving: a few sections are still partial or not started yet, and more is always being
-> added, so expect regular changes. The app's source is **currently private**; this repo carries the
+> The app is **free and in active development**, and its core features already work great — but it's a
+> living project that keeps evolving: a few sections are still partial or not started yet, and more is
+> always being added, so expect regular changes. The app's source is **currently private**; this repo carries the
 > docs, the full security model, and the secret-free cloud infrastructure, kept in sync from the main
 > repo. It's here so anyone can see exactly what the app does with your data and how it's secured —
 > without taking our word for it. Jump to [Transparency](#-transparency-first).
@@ -138,6 +141,10 @@ A snapshot of what's under the hood (a lot, for a personal project):
 | ☁️ **Cloud** | one **~80-line** Cloudflare Worker fronts every write; the app itself carries **zero cloud credentials** |
 | 🛠️ **History** | **100+** commits, built end-to-end with AI pair-programming |
 
+> ⏱️ **And how long did all this take?** About **10 days.** Colleen headed out on a three-week
+> vacation on July 2nd — and this is what happens when you leave a dirt biker home alone with a laptop
+> and way too much free time. ~33,000 lines of Kotlin later, here we are. Send help (or a trail map). 🐺
+
 ---
 
 ## 🔒 Transparency first
@@ -159,6 +166,31 @@ The short version: **the app holds no cloud credentials**, your **ride data and 
 your phone**, and anything that does touch the cloud (opt-in settings backups and app updates) is either
 a plain anonymous public download or **encrypted on your device first** — the cloud only ever stores
 unreadable ciphertext.
+
+---
+
+## 🤝 Working together
+
+We're not taking feature requests — but there's one conversation we'd genuinely love to have.
+
+WolfPack Dash exists because we wanted a better, glove-friendly way to see **our own** bikes' telemetry
+on the trail — so we built it. We'd **so much rather do that _with_ the company that makes the electric
+dirt bikes we ride than around them.** (If you ride these bikes, you can probably guess who we mean —
+and we'd be honored to talk.)
+
+Official, blessed, **secure read-only access** to a bike's telemetry would let independent builders
+like us make great tools for riders — without ever touching anything that controls the bike. Open to
+**read**, locked down to **write**: better for riders, and safe for the manufacturer. We'll always
+rather build a bridge than a workaround.
+
+And to be clear: **none of this is a knock on anyone's engineering.** It's a dirt bike — not an
+$80,000 truck, and certainly not a bank vault — and it doesn't need to be locked down like one.
+Physical access wins on *any* bike (you can fire up a keyed KTM 500 by swapping a couple of wires), so
+nobody's pretending telemetry is Fort Knox, and it shouldn't have to be. We're just reading numbers off
+our **own** bikes to build a nicer dashboard — low-stakes, good-faith, rider to maker.
+
+If you're on that side of the fence — or you can help make the introduction happen — that door is
+**wide open**. Please [open an issue](../../issues) and we'll take it somewhere better from there.
 
 ---
 
@@ -200,8 +232,9 @@ belongs to **Chadware and its developers**.
 **Can I send feature ideas, suggestions, or feedback? Can I contact Chad with ideas?**
 Kindly, no. Chad builds this in his own direction for his own crew, so he isn't taking feature
 requests, suggestions, comments, or "hey, could it also…" ideas — and please don't reach out to him
-with them. It keeps a hobby project simple and fun. Just use it and enjoy it as it is. (The **one**
-exception is security problems — see below — because those keep everyone safe.)
+with them. It keeps a hobby project simple and fun. Just use it and enjoy it as it is. (**Two**
+exceptions: security problems — see below — and one **partnership** conversation, see the _Working
+together_ section — because those two help everyone.)
 
 **Is it really free? What's the catch?**
 It's genuinely free for anyone to install and use — no accounts, no ads, no tracking, no catch. It's

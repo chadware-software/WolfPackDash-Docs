@@ -71,9 +71,9 @@ Classifying the data tells us how hard we actually need to try. Most of what thi
 | Ride telemetry (speed, battery, temps) | Low | RAM + optional local logs | **Never** |
 | GPS location / ride tracks | **Medium** (reveals where you ride/live) | Local only | **Never uploaded** |
 | Settings profile (theme, layout, thresholds) | Low (look-and-feel; **no telemetry**) | Local + *encrypted* cloud backup | Only as ciphertext, opt-in |
-| Bike VIN / serial | Low (it's **broadcast** over BLE) | Derived to a PIN; not stored raw in cloud | It's public by nature |
+| Bike VIN / serial | Low (it's **broadcast** over BLE) | Used only as a lookup key; not stored raw in cloud | It's public by nature |
 | Backup code | **Medium** (unlocks a backup slot) | Local `SharedPreferences`, shown to user | Only in the user's own hands |
-| Bonding PIN | Low (derivable from the public VIN) | Computed on demand | No |
+| Bonding PIN | Low (not an independent secret — see §5.3) | Handled on device | No |
 
 **Key takeaway for a reviewer:** the two genuinely sensitive assets are **GPS/location data**
 (mitigated by *never uploading it*) and the **backup code** (mitigated by high entropy + client-side
@@ -193,10 +193,10 @@ The binary is freeware — **assume the adversary has decompiled it** (`jadx`, `
 
 This is the weakest link, and it's mostly **inherited from the bike manufacturer**, not chosen by us:
 
-- **The bonding PIN is not independent secret material.** The bike's Bluetooth pairing is tied to its
-  own broadcast identifier — the VIN it advertises as its BLE name — by the bike's design, so the PIN
-  isn't a secret separate from that public identifier. Since the **VIN is broadcast**, being in range
-  is effectively enough to pair. **The PIN is therefore not a secret.**
+- **The bonding PIN is not independent secret material.** The bike's Bluetooth pairing is a property of
+  the bike's own design and its openly-broadcast presence, so the PIN isn't something you could rely on
+  as a secret. In practice, being in physical range of the bike is effectively enough to pair.
+  **The PIN is therefore not a security boundary.**
 - **The link handshake adds no server-side gate.** It depends only on values already available at the
   link (the bike's identifier and a per-connection nonce) — no account, no server, no shared secret.
 - **Consequence:** the "security" of the BLE link is **physical proximity**, not cryptographic. An
@@ -331,9 +331,9 @@ lets an attacker break a security goal.**
 
 | "Secret" in the binary | What it really is | If an attacker extracts it… |
 |---|---|---|
-| XOR-masked bike PINs (`PIN_CHAD`, etc.) | **Obfuscation, not security** — XOR `0x5A` over 6 digits, to keep PINs out of plain-text search/git history | They get 6-digit PINs that are *already derivable from the public VIN anyway*. No new capability. |
-| Key-derivation salt/labels (`wolfpackdash/…/v1`) | Domain-separation constants, **not secret** | Nothing — they only bind derivations to this app; knowing them doesn't help without the serial/code. |
-| Bike-name hint fragments | XOR-masked brand strings (keeps the manufacturer name out of grep) | A brand name. Irrelevant to security. |
+| A few bike-pairing values, masked in the binary | **Obfuscation, not security** — masked only so they don't sit in plain text in the app or in git history | Nothing that isn't already available to anyone physically next to the bike. No new capability. |
+| Key-derivation salt / labels | Domain-separation constants, **not secret** | Nothing — they only bind derivations to this app; knowing them doesn't help without the serial/code. |
+| Minor masked display strings | Cosmetic obfuscation only | Nothing of security value. |
 | `APP_TOKEN` (Worker) | A shared header token that **ships in the APK** → **reversible** | They can script the write endpoint — but still only within its hard limits (§9). It's an anti-drive-by speed bump, **not** an auth secret, and the code says so. |
 | **R2 write credentials** | **Not present** | N/A — the app never holds one. This is the single most important line in the table. |
 
@@ -395,9 +395,9 @@ Each scenario: the *story*, then difficulty / impact / mitigation / residual ris
 
 ### H. "I'm next to the bike — can I attack over BLE?"
 - **Story:** A2 attacker in RF range.
-- **Reality:** the pairing PIN and auth are VIN-derived and the VIN is broadcast, so proximity ≈
-  access (§5.3). **But** the app is read-only and the telemetry isn't secret, so the attacker gains
-  nothing they couldn't read off the bike's own dashboard.
+- **Reality:** pairing to the bike is a physical-proximity operation to begin with (§5.3), so being in
+  RF range is roughly the baseline anyway. **But** the app is read-only and the telemetry isn't secret,
+  so the attacker gains nothing they couldn't read off the bike's own dashboard.
 - **Residual:** this is the **bike manufacturer's** weak scheme; not fixable app-side. No remote
   (A1) exposure.
 
@@ -451,15 +451,29 @@ handles plaintext and can't leak it.
 
 ## 10. Anti-persistence: the kill switch
 
-A security-adjacent design goal unique to a personal build: **old copies shouldn't linger in the
-wild.** If an install hasn't seen one of the family bikes in ~90 days, it **retires itself** and asks
-to be uninstalled (`KillSwitch`). Seeing a family bike resets the clock
-(`KillSwitch.recordFamilySeen`).
+A security-adjacent design goal unique to a freeware personal build: **old copies shouldn't linger
+in the wild.** Rather than the old family-bike-proximity clock, each install now gets **6 months of
+life from its last update** (`KillSwitch`), measured from the OS's own `lastUpdateTime`. Auto-update
+(on by default) refreshes the app from the signed R2 channel, and every update grants a fresh 6
+months — so a phone that stays current runs indefinitely. If auto-update is disabled, or a build
+simply isn't updated for 6 months, it **gates on launch** and asks the user to update or uninstall;
+choosing Update opens a gated screen (*Update now / Try again / Exit app / Uninstall*) that drives
+the R2 update flow.
 
-- **Security value:** limits the lifespan and spread of the app to people who actually stay near a
-  family bike — a soft distribution control for a build that's shared person-to-person.
+- **Dev exemption (`isDevExempt`):** developers are never gated and never forced to update. Currently
+  that's **debug builds** (dev phones run debug APKs; the public gets release). This is moving to a
+  per-dev **dev-admin bond** — an encrypted per-dev profile in the R2 channel, tied to a dev's bonded
+  BLE relationship with a family bike, that both identifies the dev (exempting them from the clock)
+  and carries their synced dev profile. Proximity to a bike is deliberately no longer used.
+- **Security value:** ties the app's lifespan to *staying current* — stale copies self-nudge toward
+  the latest signed build, and the maintainer can retire the app for every non-dev user within 6
+  months simply by stopping updates.
 - **Not a DRM / tamper-proof mechanism** — a determined user could patch it out of the open-source
-  APK. It's a *hygiene* control, not an enforcement one, and is honestly framed as such.
+  APK (or roll the phone clock back). It's a *hygiene* control, not an enforcement one, and is honestly
+  framed as such.
+
+An optional, dev-armed **hard build-date expiry** (off by default) can additionally stop a build a
+fixed period after it was built, regardless of updates.
 
 ---
 

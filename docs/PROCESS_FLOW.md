@@ -65,36 +65,34 @@ Everyone runs the **same freeware APK**. What differs is whether the app recogni
 | | 🏍️ **Regular rider** | 🧑‍🔧 **Dev crew** (Chad, Colleen, Curtis, …) |
 |---|---|---|
 | Who | Anyone who installs the freeware | People whose bike is compiled in as a "family bike" |
-| Bike recognized? | No — treated as a generic bike | Yes — by its VIN-derived PIN |
+| Bike recognized? | No — treated as a generic bike | Yes — it's on the app's known-bikes list |
 | Extra tools | None (clean, simple app) | Dev Menu: profiles, diagnostics, bike registry, cloud publish |
 | Setup effort | **Zero — fully hands-off** | **Zero after Chad adds them once** |
 | Cloud backup | ✅ backup codes (self-serve) | ✅ backup codes **+** auto-loading dev profiles |
 
-The dividing line is a single check — `KnownUuids.isFamilyBike(pin)` — and it gates the Dev
-Menu, the "welcome, owner" popup, auto-naming, and the kill-switch keep-alive (see §10). If the
-app has never seen a family bike, none of the dev machinery ever appears.
+The dividing line is a single check — whether the app recognizes the connected bike as one of ours —
+and it gates the Dev Menu, the "welcome, owner" popup, auto-naming, and the kill-switch keep-alive
+(see §10). If the app has never seen a family bike, none of the dev machinery ever appears.
 
 ---
 
 ## 3. How the app knows *your* bike 🔑
 
-The bike advertises its **VIN** (a 17-character serial) as its Bluetooth name. From that VIN the
-app derives a stable **6-digit pairing PIN** using a fixed formula. The PIN, not the raw VIN, is the
-app's internal ID for a bike.
+Every bike advertises a unique identifier as its Bluetooth name. The app keeps a short **known-bikes
+list** — the crew's own bikes — and checks whether a connected bike is on it. If it is, the owner
+gets the dev tools; if not, it's treated as a generic bike. The exact recognition mechanism is
+intentionally kept in Chad's private notes rather than spelled out here.
 
 ```mermaid
 flowchart LR
-    VIN["🔤 VIN<br/>(BLE name, 17 chars)"] --> PIN["🔢 6-digit PIN<br/>derived from the VIN"]
-    PIN --> Q{"Is this PIN a<br/>family bike?"}
+    BIKE["🏍️ Connected bike<br/>(by its BLE identifier)"] --> Q{"On the<br/>known-bikes list?"}
     Q -->|"Yes"| FAM["🧑‍🔧 Family bike<br/>friendly name · Dev Menu ·<br/>kill-switch keep-alive"]
     Q -->|"No"| GEN["🏍️ Generic bike<br/>live data only, no dev tools"]
 ```
 
-**Where the family list lives.** A short list of PINs is compiled into the app
-(`KnownUuids.KNOWN_PIN_NAMES`). Those PINs are lightly **XOR-masked** so the actual digits and
-serials aren't sitting in the source as plain, searchable text — not real security, just tidiness.
-On first launch that list **seeds** an editable on-device registry (`OwnedBikesStore`), after which
-a dev can add or retire bikes from the Dev Menu *on their own phone* without a rebuild.
+**Where the family list lives.** A short list of the crew's own bikes is compiled into the app. On
+first launch it **seeds** an editable on-device registry, after which a dev can add or retire bikes
+from the Dev Menu *on their own phone* without a rebuild.
 
 > 🔎 The BLE name is a **lookup key, not a secret** — it's broadcast in the open. The real gate on
 > anything sensitive is the actual Bluetooth pairing/bond to the physical bike, plus encryption on
@@ -136,7 +134,7 @@ numbers and units, then updates the matching tile.
 
 ```mermaid
 flowchart LR
-    BIKE["🏍️ Bike"] -->|"notify (raw bytes)"| DEC["🔧 Decode<br/>KnownUuids.decode…()"]
+    BIKE["🏍️ Bike"] -->|"notify (raw bytes)"| DEC["🔧 Decode<br/>raw bytes → values"]
     DEC --> NUM["🔢 Real values<br/>e.g. 42 mph · 97% · 118°F"]
     NUM --> TILE["🟩 Dashboard tile<br/>+ warning colors if out of range"]
 ```
@@ -280,15 +278,16 @@ The guarantees the app is built to keep (full detail in the in-app Security scre
 - **The app holds no cloud credentials.** It reads public files anonymously; the write Worker holds
   the only key, and even it only ever stores ciphertext.
 - **The bike is read-only.** The app displays telemetry; it never sends commands.
-- **Kill switch (retirement).** This is a personal, non-commercial build. If a copy hasn't seen one
-  of the family bikes in ~90 days, it retires itself and asks to be uninstalled — so old copies
-  don't linger. Each dev *seeing their own bike* resets that clock, which is why a dev's bike being
-  compiled in matters (§11).
+- **Kill switch (retirement).** This is a freeware, non-commercial build that auto-updates from the
+  R2 channel (on by default). Each install gets **6 months from its last update**, and every update
+  grants another 6 months — so a phone that keeps updating never stops. If auto-update is turned off
+  or a build isn't updated for 6 months, it gates on launch and asks the user to update or uninstall.
+  Devs are exempt and never forced to update (§11). Nothing to do with being near a bike anymore.
 
 ```mermaid
 flowchart LR
-    SEE["👀 Family bike seen"] -->|"reset 90-day clock"| ALIVE["✅ App stays active"]
-    NOSEE["🚫 No family bike for ~90 days"] --> RETIRE["🛑 Retire + ask to uninstall"]
+    UPD["🔄 App updates (auto, on by default)"] -->|"resets 6-month clock"| ALIVE["✅ Runs indefinitely"]
+    STALE["🚫 No update for 6 months (non-dev)"] --> GATE["🛑 Gate: update or uninstall"]
 ```
 
 ---
@@ -311,23 +310,19 @@ by riding their own bike, their dev profile auto-loads (§7), and updates arrive
 
 ```mermaid
 flowchart TD
-    S1["1️⃣ Get their bike's VIN (17 chars)"] --> S2["2️⃣ Dev Menu → Backup & Diagnostics<br/>→ 'Look up PIN from VIN'"]
-    S2 --> S3["3️⃣ Add PIN_&lt;Name&gt; + friendly name<br/>to KnownUuids (XOR-masked)"]
-    S3 --> S4["4️⃣ Rebuild + publish the update"]
-    S4 --> S5["5️⃣ (Optional) 'Publish to cloud'<br/>their starter profile for their serial"]
-    S5 --> DONE["✅ New dev is now hands-off"]
+    S1["1️⃣ Chad registers the new dev's bike"] --> S2["2️⃣ Grant Dev Menu access in a new build"]
+    S2 --> S3["3️⃣ Publish the update"]
+    S3 --> S4["4️⃣ (Optional) publish their starter profile"]
+    S4 --> DONE["✅ New dev is now hands-off"]
 ```
 
-1. **Get the VIN** — the bike's 17-character serial (its Bluetooth name).
-2. **Compute the PIN** — use the built-in **Dev Menu → Backup & Diagnostics → "Look up PIN from
-   VIN"** tool. No guessing, no rebuild-to-test cycle.
-3. **Add them to the family list** — in `KnownUuids.kt`, add a masked `PIN_<Name>` constant and an
-   entry in `KNOWN_PIN_NAMES` (the existing `PIN_CURTIS` block documents exactly how the masking
-   works and is the template to copy).
-4. **Rebuild and publish** the update — the new dev (and everyone else) receives it automatically
+1. **Register the dev's bike** — Chad adds the new dev's bike to the recognized-devices list in a
+   build. (The exact identification mechanism is intentionally kept in Chad's private notes, not here.)
+2. **Grant Dev access** — once it's recognized, that bike unlocks the Dev Menu for its owner.
+3. **Rebuild and publish** the update — the new dev (and everyone else) receives it automatically
    via the update channel.
-5. **Optional: publish their starter profile** — from the Profiles screen, "Publish to cloud" for
-   their bike's serial, so their bike auto-configures itself the first time they connect (§7).
+4. **Optional: publish their starter profile** — from the Profiles screen, so their bike
+   auto-configures itself the first time they connect (§7).
 
 After that one-time step, **that dev never does manual work** — and **regular riders never did any
 to begin with.** Adding a dev is the *only* thing that requires you; everything else in this guide
