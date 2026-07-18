@@ -12,24 +12,28 @@
 **A free, glove-first Android dashboard for most any dirt bike — with live Bluetooth Low Energy
 telemetry on supported electric bikes.**
 
-> 🏔️ **Coming someday to a bike near you.** In active development, at our own pace — no countdown, no
-> rush. Built by riders, for riders, and given away **free to anyone who can use it.**
+> 🐺 **It's out, and it's free.** Built by riders, for riders, and given away free to anyone who can
+> use it — still in active development, at our own pace, so it only keeps getting better.
 
-## 📱 Get WolfPack Dash
+<div align="center">
 
-### → **[Install it here](https://get.chadman.net/install.html)**
+## ⬇️ [Download WolfPack Dash](https://get.chadman.net)
 
-One-tap Android install — **no app store, no account, no ads.** On a phone that link downloads the signed app; on a desktop it shows a QR to scan.
+**No app store · no account · no ads · Android only**
 
-> _Right now that page is a **coming-soon** teaser (with a scannable QR that winks back 🐺) — the download unlocks at launch. iPhone isn't supported; Android only._
+</div>
+
+Open that link on your Android phone and it downloads the signed app; open it on a computer and it
+shows a QR code to scan with your phone. After the one-time install, WolfPack Dash keeps itself
+updated over the air — so you only ever sideload it once.
 
 ---
 
 WolfPack Dash bolts to the handlebars and turns your phone into a full instrument cluster: GPS speed,
 trip stats, and an offline topo trail map that keep working with no signal on **any** dirt bike — and
 on a supported **electric** bike it adds live speed, gear state, and deep battery health over
-Bluetooth. It's **freeware** for fellow riders and **strictly read-only** with the bike: it listens to
-telemetry and never writes a single command back. No accounts, no ads, no Google Play Services — and
+Bluetooth. It's **freeware** for fellow riders and **strictly read-only** with the bike: it only ever *reads*
+telemetry and never sends a command that controls the bike. No accounts, no ads, no Google Play Services — and
 **your bike's telemetry never leaves the phone**.
 
 > **What this repo is.** This is the **public documentation & transparency mirror** for WolfPack Dash.
@@ -42,18 +46,30 @@ telemetry and never writes a single command back. No accounts, no ads, no Google
 
 ---
 
-## 📥 Get the app
-
-WolfPack Dash is **freeware**. The signed APK will be posted to this repo's
-[**Releases**](../../releases) page **soon** — a normal Android sideload: download the
-`.apk`, tap it, and allow "install unknown apps" once when prompted. After that first
-install, the app keeps itself updated over the air, so you only sideload once.
-
-*No release is posted yet, and there's no public date set — but this is where it'll land.*
-
----
-
 ## 📸 A look at it
+
+<p align="center">
+<img src="docs/screenshots/motion-speed.svg" width="82%" alt="Animated cluster — speed, throttle, gear and battery sweeping in the dark theme">
+</p>
+
+<p align="center"><sub>The cluster in motion — speed, throttle, gear and battery, animating right here in the README</sub></p>
+
+<p align="center"><b>Two dashboards · 21 color themes · portrait &amp; widescreen</b></p>
+
+<p align="center">
+<img src="docs/screenshots/dash-lonewolf.png" width="23%" alt="Lone Wolf dashboard — big speedo and battery pill">
+<img src="docs/screenshots/dash-packview.png" width="23%" alt="Pack View dashboard — info-dense cluster">
+<img src="docs/screenshots/theme-navy.png" width="23%" alt="Pack View in the Navy theme">
+<img src="docs/screenshots/theme-purple.png" width="23%" alt="Pack View in the Dark Purple theme">
+</p>
+
+<p align="center"><sub>Lone Wolf &amp; Pack View, recolored — WolfPack, Navy, and Dark Purple, 3 of 21 themes</sub></p>
+
+<p align="center">
+<img src="docs/screenshots/dash-landscape.png" width="66%" alt="Widescreen landscape dashboard layout">
+</p>
+
+<p align="center"><sub>Same cluster, widescreen — for however your bars sit</sub></p>
 
 <p align="center">
 <img src="docs/screenshots/dash-accelerating.png" width="48%" alt="Live dashboard — throttle, battery, HP/regen/traction over a topo map">
@@ -70,8 +86,6 @@ install, the app keeps itself updated over the air, so you only sideload once.
 
 <p align="center"><sub>Live telemetry over an offline topo map · 21 themes · battery &amp; charging alerts · glove-first menu</sub></p>
 
-<p align="center"><sub>Live cluster over a topo map · color themes · deep battery diagnostics · offline ride map</sub></p>
-
 ---
 
 ## ✨ Highlights
@@ -86,6 +100,10 @@ install, the app keeps itself updated over the air, so you only sideload once.
   track back to it
 - 🎨 **Themes & colors** — swap the whole dashboard layout and color palette from a picker, applied
   app-wide; status colors (battery, throttle, gear) stay fixed so warnings always read the same
+- 🌡️ **Trailside weather** — live outside temperature and a forecast pulled onto the dashboard, no
+  API key and no account
+- 🔄 **Sideload once** — no app store required; after the first install it quietly keeps itself
+  updated over the air, and every update is signature-checked before it installs
 - 🔐 **Private by design** — read-only, on-device, no telemetry ever leaves the phone
 
 ---
@@ -153,7 +171,7 @@ A snapshot of what's under the hood (a lot, for a personal project):
 | 📡 **Live telemetry** | **47** live bike data fields the bike broadcasts — speed, battery %, cell balance, pack/motor temps, charger, range… |
 | 📚 **Docs** | a process-flow guide, a pen-test-grade security deep dive, and these public transparency pages |
 | ☁️ **Cloud** | one **~80-line** Cloudflare Worker fronts every write; the app itself carries **zero cloud credentials** |
-| 🛠️ **History** | **100+** commits, built end-to-end with AI pair-programming |
+| 🛠️ **How** | Built end-to-end by directing AI — design, code, and docs |
 
 > ⏱️ **And how long did all this take?** About **10 days.** Colleen headed out on a three-week
 > vacation on July 2nd — and this is what happens when you leave a dirt biker home alone with a laptop
